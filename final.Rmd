@@ -1,0 +1,82 @@
+---
+output: 
+  pdf_document:
+    citation_package: natbib
+    keep_tex: true
+    fig_caption: true
+    latex_engine: pdflatex
+    template: svm-latex-ms.tex
+title: "IE 519 Dynamic Programming Term Project"
+subtitle: Restaurant Revenue Management
+date: "12/06/2018"
+author:
+- name: Haedong Kim
+  affiliation: The Department of Industrial and Mnufacturing Enginnering
+abstract: "In the term project of the Dynamic Programming course, I will work on yield management for restaurants of allocating customers to tables to maximize the revenue of the restaurants. Primarily, I am interested in combining dynamic programming-based yield management models with waiting-line models. Besides, I want to explore various statistical distributions and scenarios for arrivals and departures of customers. Analysis of multiple types of tables also will be considered."
+keywords: "Revenue Management, Restaurant Revenue Management, Dynamic Programming, Guests Placement Scheme"
+geometry: margin=1in
+fontfamily: mathpazo
+fontsize: 11pt
+spacing: double
+bibliography: mybibfile.bib
+biblio-style: apsr
+endnote: no
+---
+
+Current version is 12/06/2018, and the replication files are available on the author's Github account (https://github.com/haedong31/dp_project).
+\pagebreak
+
+# 1. Introduction
+
+The objective of revenue management, also known as yield management, is to maximize revenue by providing the right product to the right customers at the right price and time without compromising customer satisfaction [@kimes1989basics; @netessine2002introduction]. Although the main research area of revenue management is pricing, it is not only limited to pricing but also includes it also includes optimizing inventory capacity or duration of service time [@donaghy1995yield]. Revenue management began at the U.S. airline industry since the deregulation that allows airline companies the flexibility at pricing seats and controlling seat inventory [@belobaba1987survey]. Revenue management has brought enormous successes in the airline industry. It is reported that in the early 1990s that American Airline estimated the annual benefit of yield management at $500 million [@smith1992yield]. After the successes of the airline industry, other industries have adopted revenue management techniques including but not limited to hotels, automobile rentals, and cruise lines [@mcgill1999revenue]. 
+
+In this study, we focus on the application of revenue management to restaurants. Restaurant revenue management, RRM for short, is pioneered by @kimes1998restaurant and @kimes19992. @kimes1998restaurant suggests the four characteristics that make revenue management more effective if some operation has them: relatively fixed capacity, predictable demand, perishable inventory, and appropriate cost and pricing structure. The authors argue that the restaurant industry has such features. Specifically, they claim that what perishable in restaurants is available time for tables to serve customers, instead of raw food. Therefore, they come up with the measure named revenue per available seat hour (RevPASH) to check the performance of restaurants. Recently, other mesaures taking into account margin of food and cost of raw food are presented [@heo2017new]. In @kimes19992, the five steps to implement RRM are described. A way to manage meal duration is also explored [@kimes2002long]. These methods were testes in real-world restarant operations [@kimes2003revenue; @kimes2004restaurant]. While these studies provide general principles of RRM, they lack quantitatevely rigorous analysis.
+
+There are relatively few papers pertaining to quantitative RRM. The first research to mathematically model the restaurant operation has been done in @bertsimas2003restaurant. In @bertsimas2003restaurant, for seating policies, an approximate dynamic programming formulation based on interger programming for restaurants do not accept booking is proposed, and for restaurants with reservation, a stochastic gradient algorithm is described. Seating considers how to place guests to the right table to maximize renvenue. Anotheor research field of RRM is table mix concerning how to constitute a restaurant with how many and what type of tables [@kimes2013future]. Table mix along with seating without reservation is quantitatively analyzed in @guerriero2014strategic. 
+
+Both of @bertsimas2003restaurant and @guerriero2014strategic use approximate dynamic programming to solve RRM problems. Since decisions in the restaurant operation are made sequentially by time, dynamic programming is a right choice to model it. However, because of the curse of dimensionality, the both studies leverage interger programming and linear programming respectively to approximate a value function in a dynamic programming formulation. In contrast, @kuoThesis uses an exact dynamic programming model, so that accurately evaluates marginal utility of preserving a table by rejecting arrived party for a chance of bigger group arriving in the future. However, this study simplifies operation in many aspects. For example, the author assumes that there are only two sizes of parties and tables do not have a limitation so it can serve the both classes of guests. Therefore, in this paper, we propose an exact dynamic programming model that consider more realistic situations in restaurants. Specificially, we consider several sizes of parties and tables. 
+
+This paper is structured as follows. Section 2 introduces the specific problem statement including the dynamic programming formulations. Section 3 describes the solution procedure to generate seating policies. Section 4 shows a computational experiments using artificial data. Last, Section 5 presents the conclusions and suggestions for future research. 
+
+# 2. Problem statement
+
+Any finite set of positive integeres is proper for party size and table size, but, in this project, we consider party and table size as below. Table sizes are even numbers
+
+## Subsection 1 
+
+* Assumption
+    * only one party arrives for an unit period
+    * table sizes are even numbers
+    * for each $p$, the arrival probability of size $p$ party is greater than the probability of a table becoming available $q$
+* Data
+    * $N:=$ the number of periods
+    * $p:=\{0,1,...,P\}$ party size
+    * $t:=\{2,4,...,T\}$ table size and $T \geq P$
+    * $R_p:=$ the revenue by a party of size $p$
+    * $c_t:=$ the total number of tables of size $t$
+    * $q:=$ departure probability
+        * $P(D=d; n)=\binom{n}{d}q^d(1-q)^{n-d}$
+    * $\lambda :=$ the average size of arriving parties
+        * Model the arrival of parties for a given period by modified Poisson distribution
+        * $P(A=p)=\frac{P!}{e^\lambda \Gamma(P+1,\lambda)}\frac{\lambda^p}{p!}$
+* State space
+    * $X_t:=$ the number of size $t$ tables occupied
+    * $Y_p:=$ the number of parties of size $p$ waiting in the queue
+* Action space
+    * accept / queue / reject
+    * queue / reject
+
+# 3. Solution procedure
+
+# 4. Computational experiments
+
+# 5. Conclusions and future research
+
+<!--
+# References
+\setlength{\parindent}{-0.2in}
+\setlength{\leftskip}{0.2in}
+\setlength{\parskip}{8pt}
+\vspace*{-0.2in}
+\noindent
+-->
