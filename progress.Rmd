@@ -1,0 +1,47 @@
+---
+output: 
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    latex_engine: pdflatex
+    template: svm-latex-ms.tex
+title: "IE 519 Dynamic Programming Project Progress Report"
+subtitle: Restaurant Yield Management with Waiting Line Models
+date: "10/30/2018"
+author:
+- name: Haedong Kim
+  affiliation: The Department of Industrial and Mnufacturing Enginnering
+abstract: "Since I submitted the proposal, I have spent the time to investigate the literature on restaurant yield management. I had found that there are many decision making points to maximize the revenue of restaurants such as table sizes and mixes, menu prices, or promotions. However, I decided to focus on the placement of customers. In this report, I describe the restaurant yield management as a whole, limitations of the existing studies, and what I want to try to do."
+keywords: "Restaurant Yield Management, Seating, Dynamic Programming, Wating Line Models"
+geometry: margin=1in
+fontfamily: mathpazo
+fontsize: 11pt
+# spacing: double
+bibliography: mybibfile.bib
+# biblio-style: apsr
+endnote: no
+---
+
+# Introduction
+
+Yield management has brought enormous successes in many industries including but not limited to the airlines, hotels, and car rentals [@mcgill1999revenue]. It is reported in the early 1990s that American Airline estimated the annual benefit of yield management at $500 million [@smith1992yield]. The basic concept of yield management is to maximize revenue by optimizing the capacity of inventory,  duration of service time, or price [@donaghy1995yield]. There are other factors to control to increase net profits depending on business practices, while price might be the most representative one. To optimize revenue, airlines and hotels offer the same class of seats and rooms at different prices according to the time of reservations.
+
+In this study, we propose a novel framework of yield management for the restaurant industry. Although yield management has been studied intensively in applications of airlines, hotels or car rentals, there is not much research on applying it to the restaurant industry [@bertsimas2003restaurant]. A few of papers have been published since then, but still, there are many rooms for research in restaurant yield management. Because the restaurant industry is a big busingess, but there are not many studies, restaurant yield management is a promising researh topic. According to @kimes2013future, needed researh opportunities of restaurant yield management are in designing a menu, pricing, determining table mix, table location, and table type. In addition, guest placement, reservation system, and promotion are also attractive topics.
+
+Among various aspects of restaurant yield management, we focus on a guest placement problem. There is an existing study suggests a seating of customers scenario along with a dynamic programming based solution, as the authors also mention, it simplifies the reality much [@kuoThesis]. Especially, we notice that the absence of waiting lines is a critical limitation. Therefore, this study provides a dynamic programming based model for restaurant seating scenarios having a queue. 
+
+\pagebreak
+
+# Work plan (revised)
+
+* Completed
+    - Literature review on yield management waiting line models of restaurants
+    - Specify the problem statement
+* Future work
+    - Formulate the dynamic programming model
+    - Come up with a solution procedure
+    - Create examples to test the model
+    - Implement a computer code, conduct numerical test, and refine the model
+    - Write a final report and make a presentation
+
+# References
