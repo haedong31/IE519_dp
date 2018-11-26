@@ -1,0 +1,54 @@
+---
+output: 
+  pdf_document:
+    citation_package: natbib
+    keep_tex: true
+    fig_caption: true
+    latex_engine: pdflatex
+    template: svm-latex-ms.tex
+title: "IE 519 Dynamic Programming Project Proposal"
+subtitle: Modeling Restaurant with Waiting Lines
+date: "10/18/2018"
+author:
+- name: Haedong Kim
+  affiliation: The Department of Industrial and Mnufacturing Enginnering
+abstract: "In the term project of the Dynamic Programming course, I will work on yield management for restaurants of allocating customers to tables to maximize the revenue of the restaurants. Primarily, I am interested in combining dynamic programming-based yield management models with waiting-line models. Besides, I want to explore various statistical distributions and scenarios for arrivals and departures of customers. Analysis of multiple types of tables also will be considered."
+keywords: "Yield Management, Restaurant Management, Dynamic Programming, Wating Line Models"
+geometry: margin=1in
+fontfamily: mathpazo
+fontsize: 11pt
+# spacing: double
+bibliography: mybibfile.bib
+biblio-style: apsr
+endnote: no
+---
+
+# Introduction
+
+Yield management has brought huge success in hotel and airplane industries**ref**. However, applying the same technique in restaurant management has not been highlighted enough for its potential benefits. In this term project, I will work on yield management for restaurants of allocating customers to tables to maximize the revenue of the restaurants.
+
+Specifically, I am interested in extending the problem we learned in class, which considers small and large parties and decides whether to accept or reject the parties according to its size.  Although this study provides with fascinating insights, it has limitations with the respect that its setting may not reflect critical aspects of real practices in the restaurant industry. Therefore, the goal of this project is to extend the previous study to take more realistic settings and various scenarios into account.
+
+Primarily, I want to combine dynamic programming-based yield management models with waiting line models. Furthermore, I want to explore various statistical distributions and scenarios for arrivals and departures of customers. In the previous study, customers leave the restaurant with a binomial distribution, but the Poisson distribution would be an excellent choice to model the restaurant. Even analysis under some general distributions might be possible. Analysis of multiple types of tables also will also be considered since most of the restaurants has various sizes of tables.
+
+# Work plan
+
+* Week 1: Literature review on yield management waiting line models of restaurants
+* Week 2: Specify the problem statement and formulate the mathematical model
+
+*Progress report (Due on 11/01/2018)*
+
+* Week 3: Formulate the dynamic programming model
+* Week 4: Create examples to test the model
+* Week 5: Implement a computer code, conduct numerical test, and refine the model
+* Week 6: Implement a computer code, conduct numerical test, and refine the model
+* Week 7: Write a final report and make a presentation
+
+<!--
+# References
+\setlength{\parindent}{-0.2in}
+\setlength{\leftskip}{0.2in}
+\setlength{\parskip}{8pt}
+\vspace*{-0.2in}
+\noindent
+-->
