@@ -38,45 +38,113 @@ Both of @bertsimas2003restaurant and @guerriero2014strategic use approximate dyn
 
 This paper is structured as follows. Section 2 introduces the specific problem statement including the dynamic programming formulations. Section 3 describes the solution procedure to generate seating policies. Section 4 shows a computational experiments using artificial data. Last, Section 5 presents the conclusions and suggestions for future research. 
 
-# 2. Problem statement
+# 2. Problem Statement
 
-Any finite set of positive integeres is proper for party size and table size, but, in this project, we consider party and table size as below. Table sizes are even numbers
+Usually, a restaurant consists of different dimensions of tables to serve various sizes of customers. During the operation of a restaurant, which has multiple sizes of tables, a floor manager has to make following decisions upon the arrival of a party. First, a manager has to decide whether to accept the party or turn down them. If she/he chooses to receive the arrived guests, now a manager needs to determine which table to serve the customers. Revenue may increase by rejecting the arrived party to preserve a table for the chance of having a larger group in the future that generate bigger revenue than smaller parties. In addition, since there are multiple classes of tables, a manager must be careful to determine in which table to serve the party to maximize revenue. Therefore, this project develops a dynamic programming model that can be used to generate a seating scheme to increase revenue.
 
-## Subsection 1 
+A set of assumptions are made to model the restaurant operation. It is assumed that table sizes are only even numbers for simplicity, and tables cannot be merged or divided. Similar to @kuoThesis, the time horizon is discretized by sufficiently small enough periods so that only one party arrives at a period. Arrivals of customers and the size of them for a given period are random events, so a modified Poisson distribution is used to model the arrivals. State space is represented as a tuple that has the length of the number of table sizes, so each element indicates the number of occupied tables of each size. 
 
-* Assumption
-    * only one party arrives for an unit period
-    * table sizes are even numbers
-    * for each $p$, the arrival probability of size $p$ party is greater than the probability of a table becoming available $q$
-* Data
-    * $N:=$ the number of periods
-    * $p:=\{0,1,...,P\}$ party size
-    * $t:=\{2,4,...,T\}$ table size and $T \geq P$
-    * $R_p:=$ the revenue by a party of size $p$
-    * $c_t:=$ the total number of tables of size $t$
-    * $q:=$ departure probability
-        * $P(D=d; n)=\binom{n}{d}q^d(1-q)^{n-d}$
-    * $\lambda :=$ the average size of arriving parties
-        * Model the arrival of parties for a given period by modified Poisson distribution
-        * $P(A=p)=\frac{P!}{e^\lambda \Gamma(P+1,\lambda)}\frac{\lambda^p}{p!}$
-* State space
-    * $X_t:=$ the number of size $t$ tables occupied
-    * $Y_p:=$ the number of parties of size $p$ waiting in the queue
-* Action space
-    * accept / queue / reject
-    * queue / reject
+At the end of a period, the state will change according to the departures of parties have done their meals. The departures occur probabilistically, and a binomial distribution is used to model it. It is assumed that departure probability is the same across all sizes of parties, while it is possible to set up the different probability for sizes, such as a larger group has a lower probability than a smaller group for simplicity.
 
-# 3. Solution procedure
+## 2.1. Assumptions
 
-# 4. Computational experiments
+* Operation hours are discretized into multiple small periods by some unit time.
+* For a given period, customer arrivals occur at most once at the beginning of the period.
+* Operation hours can be discretized by different unit times. For example, lunch and evening hours may be discretized finer than others so more parties arrive during that hours.
+* Table sizes are even numbers.
+* Tables cannot be merged or splitted.
+* The probability of a table becoming available is same for all sizes of tables.
+* Booking is not allowed.
+* Queueing up is not allowed.
+    
+## 2.2. Data
 
-# 5. Conclusions and future research
+* $n:=\{1,2,...,N\}$ period
+* $p:=\{0,1,...,P\}$ party size.
+* $t:=\{2,4,...,T\}$ table size, and $T \geq P$.
+* $R_p:=rp$ the revenue by a party of size $p$, which is a linear function of $p$ with a coefficient $r$.
+* $c_t:=$ the total number of tables (i.e. capacity) of size $t$.
+* $q:=$ the probability of a table becoming available (i.e., a party leave the restaurant).
+* $\alpha:=$ a penalty factor for wating table capacity
+* $\lambda :=$ the average size of arriving parties.
+
+## 2.3. Probability Distribution of Arrivals
+
+Let $A$ be the random variable of size of an arriving party for a period. If size is 0, it means there is no arrivals for that period. In this paper, $A$ is modeled by a modified Poission distribution having $p$ as a domain by adjusting the constant so that the probability distribution sums up to 1. Hence, its probability mass function is
+$$
+P(A=p)=\frac{P!}{e^\lambda \Gamma(P+1,\lambda)}\frac{\lambda^p}{p!},
+$$
+where $\Gamma$ is the incomplete gamma function defined by
+$$
+\Gamma(s,x)=\int_{x}^{\infty}t^{s-1}e^{-t}dt.
+$$ 
+We interpreate the number of arrivals for a given period as size of a party. The advantage of this approach is that we can control the tendency of arrival sizes by changing the parameter of $A$, $\lambda$. It seems resonable to increase $\lambda$ for the periods of evening hours to reflect that large parties more likely arrive in the evening. 
+
+## 2.4. State Space
+
+For period $n$, let $X_n$ be the tuple of the length of the number of table sizes. The first element of $X_n$ is $x_2$ that is the number of occuipied tables of size 2, the second element $x_4$ is for the number of occuipied tables of size 4, and so forth. Furthermore, each element of $X_n$ is bounded by corredponding capacity. In other words,
+
+$$
+X_n := (x_2,x_4,...,x_T) \leq (c_2,c_4,...,c_T).
+$$
+
+## 2.5. State Transformation
+
+At the end of each period, parties leave the restaurant with probability $q$, which causes the state transformation, so we need to model the departures of customers to express the state transformation. 
+
+A party of an arbitrary size $p$ finishes their meals and leave the restaurant with a probability $q$. It means that the probabilities of the departures of customers are the same as $q$ regardless of part sizes, so the probabilities of arbitrary sized tables becoming available are also $q$. The Binomail distribution is a natural choice for the random variable $D_t$ that is the number of the depatures of parties have occupied size $t$ tables out of $x_t$ at the end a period. Its probability mass function is
+$$
+P(D_t=d_t)=\binom{x_t}{d_t}q^{d_t}(1-q)^{x_t-d_t}.
+$$
+
+Since we deals with multiple sizes of tables, we need a joint probability
+$$
+P(D_2=d_2, D_4=d_4,...,D_T=d_T)
+$$
+to model all the becoming available tables at the end of a period. It is resonable to assume that $D_t$'s are independent each other, because customers usually work on their meals independently and do not have effects on other's meal duration. Therefore, the joint probability is
+$$
+P(D_2=d_2, D_4=d_4,...,D_T=d_T)=\prod_{t=\{2,...,T\}}P(D_t=d_t)=\prod_{t=\{2,...,T\}}\binom{x_t}{d_t}q^{d_t}(1-q)^{x_t-d_t},
+$$
+which is the probability of $X_n$ becoming $X_{n+1}$ such that
+$$
+X_{n+1}=(x_2-d_2, x_4-d_4,...,x_T-d_T).
+$$
+
+## 2.6. Action Space
+
+Action space in the stated restaurant operations consists of two stages. First, it has to be decided whether to accept or refure the customer request. Next, a floor manager needs to determine at which tale to serve the party. These actions are only possible when there are available table large enough to serve the arrived party, and if the arrival occurs.
+
+If there are no tables large enough to serve the party, then only options for the manager is to reject the request of the party. In addition, if the arrival does not occur, the restaurant has no options to chose.
+
+## 2.7. Optimality Equation
+
+Crucial parts of a dynamic progrraming model, the optimal value function, recurrence relation, and boundary conditions, are presented in this section. Let $V_n(X_n)$ be the maximum revenue from the beginning of period $n$ to the end of the last period, $N$. Then the recurrence relation for the backward dynamic programming formulations is:
+$$\begin{aligned}
+&V_n(X_n)=\\
+&\sum_{p=1}^{P}P(A=p)\max\begin{cases}
+\max_{u}\{R_p+\alpha(u-p)+\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime}) \} \\
+\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}) \end{cases} \\ 
+&+P(A=0)\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime \prime})),
+\end{aligned}$$
+where
+$$\begin{aligned}
+u&=2,4,...,T, \\
+X_{n+1}^\prime&= (x_2-d_2, ..., x_u+1-d_u, ..., x_T-d_T),\ \text{and}\\
+X_{n+1}^{\prime \prime}&= (x_2-d_2,...,x_T-d_T).
+\end{aligned}$$
+
+# 3. Solution Procedure
+
+## 3.1. Seating Scheme
+
+## 3.2 Computational Effort
+
+# 4. Computational Experiments
+
+Written by Python 3.7.1
+
+# 5. Conclusions and Future Research
 
 <!--
-# References
-\setlength{\parindent}{-0.2in}
-\setlength{\leftskip}{0.2in}
-\setlength{\parskip}{8pt}
-\vspace*{-0.2in}
-\noindent
+# 6. References
 -->
