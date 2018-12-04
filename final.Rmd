@@ -52,9 +52,10 @@ At the end of a period, the state will change according to the departures of par
 * For a given period, customer arrivals occur at most once at the beginning of the period.
 * Operation hours can be discretized by different unit times. For example, lunch and evening hours may be discretized finer than others so more parties arrive during that hours.
 * Table sizes are even numbers.
+* Overbooking is not allowed so that the number of occupied tables cannot exceed fixed capacity
 * Tables cannot be merged or splitted.
 * The probability of a table becoming available is same for all sizes of tables.
-* Booking is not allowed.
+* The restaurant does not accept reservations.
 * Queueing up is not allowed.
     
 ## 2.2. Data
@@ -124,13 +125,28 @@ $$\begin{aligned}
 &\sum_{p=1}^{P}P(A=p)\max\begin{cases}
 \max_{u}\{R_p+\alpha(u-p)+\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime}) \} \\
 \sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}) \end{cases} \\ 
-&+P(A=0)\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime \prime})),
+&+P(A=0)\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime \prime}),
 \end{aligned}$$
 where
 $$\begin{aligned}
-u&=2,4,...,T, \\
+u& \in \{t:t \geq p,\ x_t<c_t \}, \\
 X_{n+1}^\prime&= (x_2-d_2, ..., x_u+1-d_u, ..., x_T-d_T),\ \text{and}\\
 X_{n+1}^{\prime \prime}&= (x_2-d_2,...,x_T-d_T).
+\end{aligned}$$
+
+Interpretation of the recurrence relation is as follow. At the beginning of a period, a floor manager first chose to whether accept or not the arrived party, and if he/she accept the party, then the follow-up decision is table size to serve the customers. At the end of the period, some guests leave the restaurant. The expected maximum revenue of the given period is the sum of immediate revenue according to the decision structre stated earlier and the future expected maximum revenue.
+
+Boundary conditions are need for the case when there is not available table for arrived party of size $p$. $u=\emptyset$ in this case. Then, in the reccrence relation,
+$$\begin{aligned}
+\max&\begin{cases}
+\max_{u}\{R_p+\alpha(u-p)+\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime}) \} \\
+\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}) \end{cases} \\
+&=\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}).
+\end{aligned}$$
+
+At the beginning of last period, the restaurant always accept a request of any party regardless of its size without the penalty of seating a party at a bigger table if there are available tables. Unless, the restaurant has no choice but to turn down the request. To model this senario, an indicator function $\mathbb{I}(p, X_N)$ is introduced to make revenue 0 when there are no available tables for party size $p$ at period $N$. $\mathbb{I}(p, X_N)$ is 1 if there exist $t\in\{2,3,...,T\}$ such that $t \geq p$ and $x_t<c_t$ for $x_t \in X_N$, otherwise 0. Then,
+$$\begin{aligned}
+V_N(X_N) = P(A=p)R_p\mathbb{I}(p, X_N).
 \end{aligned}$$
 
 # 3. Solution Procedure
