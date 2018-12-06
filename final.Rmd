@@ -12,7 +12,7 @@ date: "12/06/2018"
 author:
 - name: Haedong Kim
   affiliation: The Department of Industrial and Mnufacturing Enginnering
-abstract: "In the term project of the Dynamic Programming course, I will work on yield management for restaurants of allocating customers to tables to maximize the revenue of the restaurants. Primarily, I am interested in combining dynamic programming-based yield management models with waiting-line models. Besides, I want to explore various statistical distributions and scenarios for arrivals and departures of customers. Analysis of multiple types of tables also will be considered."
+abstract: "For the term project of the Dynamic Programming course, I have worked on restaurant revenue management of allocating customers to tables to maximize the revenue of the restaurants. Unlike the previous study on the similar settings, multiple sizes of parties and tables are considered. Probability distributions to model the multiple sizes of parties and tables are proposed. Then the dynamic programming model and seating schemes using that model are proposed to maximize the restaurant revenue."
 keywords: "Revenue Management, Restaurant Revenue Management, Dynamic Programming, Guests Placement Scheme"
 geometry: margin=1in
 fontfamily: mathpazo
@@ -51,7 +51,8 @@ At the end of a period, the state will change according to the departures of par
 * Operation hours are discretized into multiple small periods by some unit time.
 * For a given period, customer arrivals occur at most once at the beginning of the period.
 * Operation hours can be discretized by different unit times. For example, lunch and evening hours may be discretized finer than others so more parties arrive during that hours.
-* Table sizes are even numbers.
+* Size of parties has an upper bound
+* The restaurant has a table large enough to serve the largest party
 * Overbooking is not allowed so that the number of occupied tables cannot exceed fixed capacity
 * Tables cannot be merged or splitted.
 * The probability of a table becoming available is same for all sizes of tables.
@@ -62,9 +63,9 @@ At the end of a period, the state will change according to the departures of par
 
 * $n:=\{1,2,...,N\}$ period
 * $p:=\{0,1,...,P\}$ party size.
-* $t:=\{2,4,...,T\}$ table size, and $T \geq P$.
+* $t:=\{1,2,...,T\}$ table size, and $T \geq P$.
 * $R_p:=rp$ the revenue by a party of size $p$, which is a linear function of $p$ with a coefficient $r$.
-* $c_t:=$ the total number of tables (i.e. capacity) of size $t$.
+* $C_t:=$ the total number of tables (i.e. capacity) of size $t$.
 * $q:=$ the probability of a table becoming available (i.e., a party leave the restaurant).
 * $\alpha:=$ a penalty factor for wating table capacity
 * $\lambda :=$ the average size of arriving parties.
@@ -83,10 +84,10 @@ We interpreate the number of arrivals for a given period as size of a party. The
 
 ## 2.4. State Space
 
-For period $n$, let $X_n$ be the tuple of the length of the number of table sizes. The first element of $X_n$ is $x_2$ that is the number of occuipied tables of size 2, the second element $x_4$ is for the number of occuipied tables of size 4, and so forth. Furthermore, each element of $X_n$ is bounded by corredponding capacity. In other words,
+For period $n$, let $X_n$ be the tuple of the length of the number of table sizes. The first element of $X_n$ is $x_1$ that is the number of occuipied tables of size 1, the second element $x_2$ is for the number of occuipied tables of size 2, and so forth. Furthermore, each element of $X_n$ is bounded by corredponding capacity. In other words,
 
 $$
-X_n := (x_2,x_4,...,x_T) \leq (c_2,c_4,...,c_T).
+X_n := (x_1,x_2,...,x_T) \leq (C_1,C_2,...,C_T).
 $$
 
 ## 2.5. State Transformation
@@ -100,15 +101,15 @@ $$
 
 Since we deals with multiple sizes of tables, we need a joint probability
 $$
-P(D_2=d_2, D_4=d_4,...,D_T=d_T)
+P(D_1=d_1, D_2=d_2,...,D_T=d_T)
 $$
 to model all the becoming available tables at the end of a period. It is resonable to assume that $D_t$'s are independent each other, because customers usually work on their meals independently and do not have effects on other's meal duration. Therefore, the joint probability is
 $$
-P(D_2=d_2, D_4=d_4,...,D_T=d_T)=\prod_{t=\{2,...,T\}}P(D_t=d_t)=\prod_{t=\{2,...,T\}}\binom{x_t}{d_t}q^{d_t}(1-q)^{x_t-d_t},
+P(D_1=d_1, D_2=d_2,...,D_T=d_T)=\prod_{t=\{1,...,T\}}P(D_t=d_t)=\prod_{t=\{1,...,T\}}\binom{x_t}{d_t}q^{d_t}(1-q)^{x_t-d_t},
 $$
 which is the probability of $X_n$ becoming $X_{n+1}$ such that
 $$
-X_{n+1}=(x_2-d_2, x_4-d_4,...,x_T-d_T).
+X_{n+1}=(x_1-d_1, x_2-d_2,...,x_T-d_T).
 $$
 
 ## 2.6. Action Space
@@ -123,15 +124,15 @@ Crucial parts of a dynamic progrraming model, the optimal value function, recurr
 $$\begin{aligned}
 &V_n(X_n)=\\
 &\sum_{p=1}^{P}P(A=p)\max\begin{cases}
-\max_{u}\{R_p+\alpha(u-p)+\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime}) \} \\
-\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}) \end{cases} \\ 
-&+P(A=0)\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime \prime}),
+\max_{u}\{R_p+\alpha(u-p)+\sum_{d_T=0}^{x_T}...\sum_{d_1=0}^{x_1}P(D_1=d_1,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime}) \} \\
+\sum_{d_T=0}^{x_T}...\sum_{d_1=0}^{x_1}P(D_1=d_1,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}) \end{cases} \\ 
+&+P(A=0)\sum_{d_T=0}^{x_T}...\sum_{d_1=0}^{x_1}P(D_1=d_1,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime \prime}),
 \end{aligned}$$
-where
+where, for each $p$,
 $$\begin{aligned}
-u& \in \{t:t \geq p,\ x_t<c_t \}, \\
-X_{n+1}^\prime&= (x_2-d_2, ..., x_u+1-d_u, ..., x_T-d_T),\ \text{and}\\
-X_{n+1}^{\prime \prime}&= (x_2-d_2,...,x_T-d_T).
+u& \in \{t:t \geq p,\ x_t<C_t \}, \\
+X_{n+1}^\prime&= (x_1-d_1, ..., x_u+1-d_u, ..., x_T-d_T), \\
+X_{n+1}^{\prime \prime}&= (x_1-d_1,...,x_T-d_T).
 \end{aligned}$$
 
 Interpretation of the recurrence relation is as follow. At the beginning of a period, a floor manager first chose to whether accept or not the arrived party, and if he/she accept the party, then the follow-up decision is table size to serve the customers. At the end of the period, some guests leave the restaurant. The expected maximum revenue of the given period is the sum of immediate revenue according to the decision structre stated earlier and the future expected maximum revenue.
@@ -139,28 +140,103 @@ Interpretation of the recurrence relation is as follow. At the beginning of a pe
 Boundary conditions are need for the case when there is not available table for arrived party of size $p$. $u=\emptyset$ in this case. Then, in the reccrence relation,
 $$\begin{aligned}
 \max&\begin{cases}
-\max_{u}\{R_p+\alpha(u-p)+\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime}) \} \\
-\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}) \end{cases} \\
-&=\sum_{d_T=0}^{x_T}...\sum_{d_2=0}^{x_2}P(D_2=d_2,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}).
+\max_{u}\{R_p+\alpha(u-p)+\sum_{d_T=0}^{x_T}...\sum_{d_1=0}^{x_1}P(D_1=d_1,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime}) \} \\
+\sum_{d_T=0}^{x_T}...\sum_{d_1=0}^{x_1}P(D_1=d_1,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}) \end{cases} \\
+&=\sum_{d_T=0}^{x_T}...\sum_{d_1=0}^{x_1}P(D_1=d_1,...,D_T=d_T)V_{n+1}(X_{n+1}^{\prime\prime}).
 \end{aligned}$$
 
-At the beginning of last period, the restaurant always accept a request of any party regardless of its size without the penalty of seating a party at a bigger table if there are available tables. Unless, the restaurant has no choice but to turn down the request. To model this senario, an indicator function $\mathbb{I}(p, X_N)$ is introduced to make revenue 0 when there are no available tables for party size $p$ at period $N$. $\mathbb{I}(p, X_N)$ is 1 if there exist $t\in\{2,3,...,T\}$ such that $t \geq p$ and $x_t<c_t$ for $x_t \in X_N$, otherwise 0. Then,
+At the beginning of last period, the restaurant always accept a request of any party regardless of its size without the penalty of seating a party at a bigger table if there are available tables. Unless, the restaurant has no choice but to turn down the request. To model this senario, an indicator function $\mathbb{I}(p, X_N)$ is introduced to make revenue 0 when there are no available tables for party size $p$ at period $N$. $\mathbb{I}(p, X_N)$ is 1 if there exist $t\in\{2,3,...,T\}$ such that $t \geq p$ and $x_t<C_t$ for $x_t \in X_N$, otherwise 0. Then,
 $$\begin{aligned}
 V_N(X_N) = P(A=p)R_p\mathbb{I}(p, X_N).
 \end{aligned}$$
 
 # 3. Solution Procedure
 
-## 3.1. Seating Scheme
+A seating scheme may be getting complex as the number of party sizes and table sizes we consider become bigger. However, some general principles are available for any situation. First, we do not reject the largest size of party when if are available tables for them, because they guarantee large revenue. Second, if there are no available tables which are larger than or equal to the size of the arrived party, we have no choice but to turn down their request. Last, if we have a table just match with the size of the arrival, we assign the party to that table. Otherwise, seating decisions are depending on the levels of occupied tables. Therefore, our objective is to find the limits of the table levels so that decisions on accepting or rejecting arrival are made accordingly.
 
-## 3.2 Computational Effort
+We developed the seating schemes for two models: 1) two party and table sizes (i.e., large and small), 2) three party and table sizes (i.e., large, medium, and small). For each case, a seating policy for each size of party except the largest one is presented. Abbreviations S, M, and L are uses to refering to small, medium, and large respectively.
 
-# 4. Computational Experiments
+## 3.1. Case 1. $p=\{S, L\}$ and $t=\{S, L\}$
 
-Written by Python 3.7.1
+For a large party, we always accept their request if $x_L<C_L$. For a small party, three states are possible:
 
-# 5. Conclusions and Future Research
+1. $x_S<C_S$
+2. $x_S=C_S$ and $x_L=C_L$ 
+3. $x_S=C_S$ and $x_L<C_L$
+
+In state 1, a floor manager always accept the small party and reject them in state 2. In state 3, decision vary according to the level of $x_L$. A floor manager may want to seat a small party to a large table if there are many idle large tables but to reject the small party if there are only a few of large tables to keep them for arivals of large parties in the future. To come up with a seating scheme for state 3, we need a marginal utility function evaluating the profit of preserving a large table for each period $n$. It is given by
+$$
+\Delta_n(x_L)=V_n(C_S, x_L) - V_N(C_S, x_L+1).
+$$
+It should be noted that the utility functions defined this way are increasing functions, because the more occupied tables, the higher revenue by preserving a table. The table level limit for a small party $b_{n,S}$ is
+$$
+b_{n,S}=\min\{x_L:\Delta_{n+1}(x_L)>R_L\}.
+$$
+Therefore, at period $n$ and state 3, the restaurant accepts a small party if the number of occupied large tables at the beginning of period $n$ is less than $b_{n,S}$, $x_L<b_{n,S}$.
+
+## 3.2. Case 2. $p=\{S, M, L\}$ and $t=\{S, M, L\}$
+
+Similar to the Case 2, we always accept a large group if $x_L<C_L$ and reject otherwise. A seating scheme for a medium party is actually the same with the Case 1, because there is only one larger table size availabe for the medium party. Therefore, there are three states:
+
+1. $x_M<C_M$
+2. $x_M=C_M$ and $x_L=C_L$ 
+3. $x_M=C_M$ and $x_L<C_L$
+
+The restaurant always accept the party at state 1 and reject at state 2. A marginal utility function and a control limit are
+$$\begin{aligned}
+\Delta_n^M(x_L)&=\sum_{x_L}V_n(x_L, C_M, x_L) - V_N(x_L, C_M, x_L+1),\\
+b_n^M&=\min\{x_L:\Delta_{n+1}(x_L)>R_M\}.
+\end{aligned}$$
+The only difference is we marginalize out $x_L$ when calculating $\Delta_n^M(x_L)$, because $x_L$ does not affect decisions on seating of medium groups. Therfore, the seating policy is let a medium party have a seat at a large table if $x_L<b_n^M$ for each period $n$.
+
+A seating policy for a small party becomes complex because it is possilbe to seat them at two sizes of tables, medium and large. Five states are possible:
+
+1. $x_S<C_S$
+2. $x_S=C_S,\ x_M=C_M,\ x_L=C_L$
+3. $x_S=C_S,\ x_M<C_M,\ x_L=C_L$
+4. $x_S=C_S,\ x_M=C_M,\ x_L<C_L$
+5. $x_S=C_S,\ x_M<C_M,\ x_L<C_L$
+
+The similar way of analysis works for from state 1 to state 4. In state 1, we always accept a small party and reject in state 2. For state 3 and 4, marginal utility functions are
+$$\begin{aligned}
+\Delta_{n,3}^S(x_M) &=V_n(C_S,\ x_M,\ C_L)-V_n(C_S,\ x_{M}+1,\ C_L),\\
+\Delta_{n,4}^S(x_L) &=V_n(C_S,\ C_M,\ x_L)-V_n(C_S,\ C_M, x_L+1),
+\end{aligned}$$
+and the corresponding control limits are
+$$\begin{aligned}
+b_{n,3}^S &=\min\{x_M:\Delta_{n+1,3}^S(x_M)>R_S\},\\
+b_{n,4}^S &=\min\{x_L:\Delta_{n+1,4}^S(x_L)>R_S\}.
+\end{aligned}$$
+Therefore, if a small party arrives at state 3 and $x_M<b_{n,3}^S$, the restaurant accept the party. If the party arrivaes at state 4 and $x_L<b_{n,4}^S$, the restaurant accept their request.
+
+The most complex situation is when the restaurant is in state 5. Now a seating scheme has to consider not only just one level of tables, but two levels simultaneously. At period $n$, for each level of $x_M$ and $x_L$, we need to evaluate the revenue of preserving a medium table and a large table defined by $\Delta_{n,5M}^S(x_M,x_L):=V_n(C_S,x_M,x_L)-V_n(C_S,x_M+1,x_L)$ and $\Delta_{n,5L}^S(x_M,x_L)=V_n(C_S,x_M,x_L)-V_n(C_S,x_M,x_L+1)$. Then, we find a boundary value of preserving a medium or large table yield the higher revenue by increasing $x_L$ and $x_M$. The search algorithm starts from when $x_L=0$and $x_M=0$. Then it checks that $\Delta_{n,5L}^S(x_M,x_L) < R_L$ and $\Delta_{n,5M}^S(x_M,x_L) < R_L$ increase $x_M$ by 1. If the algorithm finds the first $(x_L, x_M)$ such that $\Delta_{n,5L}^S(x_M,x_L) < R_L$, save $(x_L, x_M)$ at $b_{n,5L}^S$ and it stops checking $\Delta_{n,5L}^S(x_M,x_L) < R_L$. Note that now the control limit $b_{n,5L}^S$ is not a constant but a vector. The same procedure is applying to $\Delta_{n,5M}^S(x_M,x_L) < R_L$ to find $(X_L, x_M)$ satisfying that inequality. If the both coordinates have been found for $x_L=0$, then do the same procedure for $x_L=1$ and so forth. It looks like in pseudo code as follow:
+```{Python eval=FALSE}
+b_L=list()
+b_M=list()
+for xL in range(1, C_L-1):
+  for xM in range(1, C_M-1):
+    if delta_L(xL, xM) > RS:
+      # Skip it when we find the fist (xL, xM) satisfies delta_L(xL, xM) > RS
+      b_L.append((xL, xM))
+    if delta_M(xL,xM) > RS:
+      # Skip it when we find the fist (xL, xM) satisfies delta_M(xL, xM) > RS
+      b_M.append((xL, xM))
+    if delta_L(xL,xM) > RS && delta_M(xL,xM) > RS:
+      # Go to the next xL
+```
+where `xL`, `xM`, `delta_L`, `delta_M`, `b_L`, and `b_M`, are corresponding to $x_L$, $x_M$, $\Delta_{n,5L}^S$, $\Delta_{n,5M}^S$, $b_{n,5L}^S$, and $b_{n,5M}^S$. 
+
+A seating policy can be derived from $b_{n,5L}^S$ and $b_{n,5M}^S$. Upon arrival of a small party, check that there is an element of $b^L \in b_{n,5L}^S$ and $b^M \in b_{n,5L}^S$ such that $b^L \leq (x_L,x_M)$ and $b^M \leq (x_L,x_M)$. If they are true, rejecting the arrived party may yields the hiher revenue in the future. On the other hand, there if one of the inequalities does not hold, we may want to accept the party. For example, if there is $b^M \leq (x_L,x_M)$, but $b^L$ such that $b^L \leq (x_L,x_M)$ does not exist, assigning the small party to a large party would yield the higher revenue than rejecting them. If both inequalities do not hold, accepting the party to a smaller table, mideum one. 
+
+# 4. Conclusions and Future Research
+
+We proposed a dynaic programming model and seating schemes bases on that model. Although it seems to give promising results, this study lacks of simulation or experiments based on real data to verify the proposed algorithms. In addition, since generating schemes is getting complex and difficult as the numbers of sizes of parties and tables become larger, a general way to create seating policies is needed. Furthermore, considering waiting lines must be interesting and practical research.
 
 <!--
 # 6. References
+\setlength{\parindent}{-0.2in}
+\setlength{\leftskip}{0.2in}
+\setlength{\parskip}{8pt}
+\vspace*{-0.2in}
+\noindent
 -->
